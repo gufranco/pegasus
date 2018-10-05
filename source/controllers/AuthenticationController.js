@@ -21,11 +21,17 @@ module.exports = class AuthenticationController extends BaseController {
    */
   applyRoutes() {
     // Rotas públicas
-    this.express.post('/api/authentication/sign_in', (request, response, next) => this.signin(request, response, next));
-    this.express.post('/api/authentication/sign_up', (request, response, next) => this.signup(request, response, next));
+    this.express.post(
+      '/api/authentication/sign_in',
+      (request, response, next) => this.signin(request, response, next),
+    );
+    this.express.post(
+      '/api/authentication/sign_up',
+      (request, response, next) => this.signup(request, response, next),
+    );
 
     // Rotas privadas
-    //this.express.get('/api/authentication/sign_off', (request, response, next) => this.authenticate(request, response, next), (request, response, next) => this.signoff(request, response, next));
+    // this.express.get('/api/authentication/sign_off', (request, response, next) => this.authenticate(request, response, next), (request, response, next) => this.signoff(request, response, next));
   }
 
   /**
@@ -56,10 +62,13 @@ module.exports = class AuthenticationController extends BaseController {
    */
   signup(request, response, next) {
     const user = new UserModel(request.body);
-    user.save()
+    user
+      .save()
       .then(user => response.json(user))
       .catch((error) => {
-        const messages = Object.values(error.errors).map(error => error.message);
+        const messages = Object.values(error.errors).map(
+          error => error.message,
+        );
 
         response.status(400).json(messages);
       });

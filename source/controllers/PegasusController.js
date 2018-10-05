@@ -6,6 +6,17 @@ module.exports = class PegasusController {
    * constructor
    */
   constructor() {
+    this.mandatoryEnvironmentVars = [
+      'EXPRESS_PORT',
+      'MONGODB_USERNAME',
+      'MONGODB_PASSWORD',
+      'MONGODB_HOST',
+      'MONGODB_PORT',
+      'MONGODB_DATABASE',
+      'MONGODB_AUTH_DATABASE',
+      'SALT_WORK_FACTOR',
+    ];
+
     this.express = ExpressHelper.getInstance();
     this.authenticationController = new AuthenticationController(this.express);
   }
@@ -14,41 +25,15 @@ module.exports = class PegasusController {
    * checkEnvironment - Checa as variáveis de ambiente da aplicação
    */
   checkEnvironment() {
-    if (!process.env.EXPRESS_PORT) {
-      throw new Error('Missing EXPRESS_PORT environment var.');
-    }
-
-    if (!process.env.MONGODB_USERNAME) {
-      throw new Error('Missing MONGODB_USERNAME environment var.');
-    }
-
-    if (!process.env.MONGODB_PASSWORD) {
-      throw new Error('Missing MONGODB_PASSWORD environment var.');
-    }
-
-    if (!process.env.MONGODB_HOST) {
-      throw new Error('Missing MONGODB_HOST environment var.');
-    }
-
-    if (!process.env.MONGODB_PORT) {
-      throw new Error('Missing MONGODB_PORT environment var.');
-    }
-
-    if (!process.env.MONGODB_DATABASE) {
-      throw new Error('Missing MONGODB_DATABASE environment var.');
-    }
-
-    if (!process.env.MONGODB_AUTH_DATABASE) {
-      throw new Error('Missing MONGODB_AUTH_DATABASE environment var.');
-    }
-
-    if (!process.env.SALT_WORK_FACTOR) {
-      throw new Error('Missing SALT_WORK_FACTOR environment var.');
-    }
+    this.mandatoryEnvironmentVars.forEach((mandatoryEnvironmentVar) => {
+      if (!process.env[mandatoryEnvironmentVar]) {
+        throw new Error(`Missing ${mandatoryEnvironmentVar} environment var.`);
+      }
+    });
   }
 
   /**
-  * run - Inicializa a aplicação
+   * run - Inicializa a aplicação
    *
    * @param {function} callback Método executado após inicializar a aplicação
    */

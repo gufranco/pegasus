@@ -1,6 +1,6 @@
-const MongooseHelper = require('../helpers/MongooseHelper');
 const bcrypt = require('bcrypt');
 const uuidv4 = require('uuid/v4');
+const MongooseHelper = require('../helpers/MongooseHelper');
 
 // Captura a instância do Mongoose
 const mongoose = MongooseHelper.getInstance();
@@ -24,7 +24,9 @@ const schema = new mongoose.Schema({
     },
     trim: true,
     validate: {
-      validator: email => /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/.test(email),
+      validator: email => /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/.test(
+        email,
+      ),
       message: '{VALUE} is not a valid email!',
     },
   },
@@ -36,7 +38,7 @@ const schema = new mongoose.Schema({
       validator: (password) => {
         const regexPassword = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])\w{12,}$/;
 
-        return (regexPassword.test(password) || password.startsWith('$2b$'));
+        return regexPassword.test(password) || password.startsWith('$2b$');
       },
       message: '{VALUE} is not a valid password!',
     },
@@ -70,11 +72,15 @@ schema.pre('save', function preSave(next) {
 
   // Gera um novo hash da senha se ela for alterada
   if (user.isModified('password')) {
-    return bcrypt.hash(user.password, parseInt(process.env.SALT_WORK_FACTOR, 10), (error, hash) => {
-      user.password = hash;
+    return bcrypt.hash(
+      user.password,
+      parseInt(process.env.SALT_WORK_FACTOR, 10),
+      (error, hash) => {
+        user.password = hash;
 
-      next();
-    });
+        next();
+      },
+    );
   }
 
   next();
@@ -93,7 +99,11 @@ schema.methods.comparePassword = function comparePassword(password, callback) {
  * Método ESTÁTICO que captura o usuário autenticado através do usuário e da
  * senha informada, persisti um novo token para ele e retorna o objeto completo
  */
-schema.statics.getAuthenticated = function getAuthenticated(email, password, callback) {
+schema.statics.getAuthenticated = function getAuthenticated(
+  email,
+  password,
+  callback,
+) {
   this.findOne({ email }, (error, user) => {
     if (error) {
       return callback(error);
