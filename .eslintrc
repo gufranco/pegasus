@@ -1,0 +1,12 @@
+{
+  "extends": "airbnb",
+  "rules": {
+    "class-methods-use-this": "off",
+    "no-console": "off",
+    "consistent-return": "off"
+  },
+  "env": {
+    "node": true,
+    "mocha": true
+  }
+}
