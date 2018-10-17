@@ -2,16 +2,16 @@
 
 ## Start development environment
 ```bash
-mkdir -p ~/Workspace/mongodb/pegasus
+mkdir -p ~/Workspace/Databases/MongoDB
 
-sudo docker run \
-  --env "MONGO_INITDB_ROOT_USERNAME=pegasus" \
-  --env "MONGO_INITDB_ROOT_PASSWORD=pegasusPassword" \
-  -v $HOME/Workspace/mongodb/pegasus:/data/db \
+docker run \
+  --name mongodb \
   --restart unless-stopped \
-  --name mongodb_pegasus \
+  --env "MONGO_INITDB_ROOT_USERNAME=root" \
+  --env "MONGO_INITDB_ROOT_PASSWORD=root" \
+  -v $HOME/Workspace/Databases/mongodb:/data/db \
   --publish 27017:27017 \
-  -d mongo:latest
+  -d mongo:4-xenial
 
 EXPRESS_PORT=8080 \
 MONGODB_USERNAME=pegasus \

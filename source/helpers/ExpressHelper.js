@@ -10,11 +10,20 @@ module.exports = (() => {
      * @static getInstance - Singleton que retorna o objeto do Express
      * configurado com as necessidades da aplicação.
      *
-     * @returns {object} Instância do Express
+     * @returns {object} Instância
      */
     static getInstance() {
       if (!expressInstance) {
+        ['EXPRESS_PORT'].forEach((mandatoryEnvironmentVar) => {
+          if (!process.env[mandatoryEnvironmentVar]) {
+            throw new Error(
+              `Missing ${mandatoryEnvironmentVar} environment var.`,
+            );
+          }
+        });
+
         expressInstance = express();
+
         expressInstance.use(bodyParser.json());
         expressInstance.use(bodyParser.urlencoded({ extended: true }));
         expressInstance.use('/', express.static(`${__dirname}/../../public`));
